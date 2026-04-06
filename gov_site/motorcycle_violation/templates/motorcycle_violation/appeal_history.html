@@ -1,0 +1,38 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Appeal History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Your Appeal History</h2>
+
+    {% if appeals %}
+        <div class="table-responsive"> <!-- Make the table responsive -->
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Violation</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Date Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appeal in appeals %}
+                        <tr class="{% if appeal.status == 'accepted' %}table-success{% elif appeal.status == 'rejected' %}table-danger{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ appeal.violation.violation_type }}</td>
+                            <td>{{ appeal.reason }}</td>
+                            <td>{{ appeal.get_status_display }}</td>
+                            <td>{{ appeal.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center">No appeals found.</div>
+    {% endif %}
+</div>
+{% endblock %}

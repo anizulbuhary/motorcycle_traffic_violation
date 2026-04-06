@@ -1,0 +1,162 @@
+<mxfile host="65bd71144e">
+    <diagram id="oEaQ_YHezrLsBcmYVa2u" name="Page-1">
+        <mxGraphModel dx="-5240" dy="-11607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="111" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="6698" y="12934" width="663.79" height="1020" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="" style="group;aspect=fixed;strokeWidth=2;strokeColor=none;fontSize=16;" vertex="1" connectable="0" parent="111">
+                    <mxGeometry width="663.79" height="1020" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;strokeWidth=2;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="106.21" width="26.55" height="990" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="32">
+                    <mxGeometry x="6.64" y="92.93" width="13.28" height="867.07" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="Officer Interface" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="212.41" width="132.76" height="990" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="34">
+                    <mxGeometry x="59.74" y="92.93" width="13.28" height="867.07" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="Backend Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="371.72" width="132.76" height="990" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="36">
+                    <mxGeometry x="59.74" y="132.76" width="13.28" height="827.24" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="Database" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="531.03" width="132.76" height="990" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="Open Appeal" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;strokeWidth=2;exitX=1;exitY=0;exitDx=0;exitDy=5;exitPerimeter=0;fontSize=16;" edge="1" parent="65" source="33" target="35">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="66.379" y="99.56896551724137" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="46" value="Get Appeal Info." style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;strokeWidth=2;fontSize=16;" edge="1" parent="65" source="35" target="37">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="331.895" y="126.1206896551724" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="52" value="Alternative" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=92;strokeWidth=2;height=31;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="-20" y="278.79" width="683.79" height="711.21" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="[If appeal&amp;nbsp;&lt;div&gt;accepted]&lt;/div&gt;" style="text;html=1;strokeWidth=2;fontSize=16;" vertex="1" parent="52">
+                    <mxGeometry width="100" height="20" relative="1" as="geometry">
+                        <mxPoint x="20" y="40" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="54" value="[else]" style="line;strokeWidth=2;dashed=1;labelPosition=center;verticalLabelPosition=bottom;align=left;verticalAlign=top;spacingLeft=20;spacingTop=15;html=1;whiteSpace=wrap;fontSize=16;" vertex="1" parent="52">
+                    <mxGeometry y="501.21" width="680" height="13.28" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="Accept Appeal" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="160" y="51.20999999999913" as="sourcePoint"/>
+                        <mxPoint x="289.88" y="45.20999999999913" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="63" value="Accept Appeal" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="305.9997" y="84.9655172413793" as="sourcePoint"/>
+                        <mxPoint x="452.03349999999995" y="84.9655172413793" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="49" value="Return Success" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" target="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="444.73929999999933" y="180.68076786349138" as="targetPoint"/>
+                        <mxPoint x="610" y="180.20999999999913" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="Get Reporter&amp;nbsp;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;Stats.&lt;/span&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="109" y="221.20999999999913" as="sourcePoint"/>
+                        <mxPoint x="610" y="241.20999999999913" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="106" value="Reject Appeal" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="140" y="541.2099999999991" as="sourcePoint"/>
+                        <mxPoint x="293.8800000000001" y="551.4199999999983" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="107" value="Reject Appeal" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="35">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="310" y="581.2099999999991" as="sourcePoint"/>
+                        <mxPoint x="450" y="581.2099999999991" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="108" value="Update Appeal&lt;br&gt;Status" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="37">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="470" y="611.2099999999991" as="sourcePoint"/>
+                        <mxPoint x="610" y="611.2099999999991" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="109" value="Return Success" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="52" source="39">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="150" y="661.2099999999991" as="targetPoint"/>
+                        <mxPoint x="614" y="661.4199999999983" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="60" value="Return Appeal Info." style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="65" source="37" target="35">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="288.08486" y="204.44827586206893" as="targetPoint"/>
+                        <mxPoint x="434.11866" y="204.44827586206893" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="354.46385999999995" y="204.44827586206893"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="61" value="Show Appeal Info." style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="65" source="35" target="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="132.758" y="244.2758620689655" as="targetPoint"/>
+                        <mxPoint x="278.79179999999997" y="244.2758620689655" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="201.79216" y="244.2758620689655"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="39" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeWidth=2;fontSize=16;" vertex="1" parent="65">
+                    <mxGeometry x="590.77" y="390" width="13.28" height="570" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" value="Return Info." style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="65" target="33">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="444.73929999999933" y="567.0103092783505" as="targetPoint"/>
+                        <mxPoint x="590.7730999999994" y="567.0103092783505" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="48" value="Marked As&lt;br&gt;Overturned" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="65">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="444.7399999999998" y="410.000000000001" as="sourcePoint"/>
+                        <mxPoint x="590.7700000000004" y="410.000000000001" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="104" value="Suspend&amp;nbsp;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;Reporter&lt;/span&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;" edge="1" parent="65">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="126.13000000000011" y="639.9950000000001" as="sourcePoint"/>
+                        <mxPoint x="590.7700000000004" y="639.9950000000001" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="99" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;Alternative&lt;/span&gt;" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=100;strokeWidth=2;height=30;" vertex="1" parent="111">
+                    <mxGeometry y="590" width="640" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="100" value="&lt;font&gt;&lt;span style=&quot;font-size: 16px; color: rgb(0, 0, 0);&quot;&gt;[If&amp;nbsp;&lt;/span&gt;&lt;font&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;misuse&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;div&gt;&lt;font&gt;&lt;font style=&quot;background-color: transparent;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;exceed&lt;/span&gt;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; font-size: 16px;&quot;&gt;]&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;" vertex="1" parent="99">
+                    <mxGeometry width="100" height="20" relative="1" as="geometry">
+                        <mxPoint x="20" y="40" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="101" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;[else]&lt;/span&gt;" style="line;strokeWidth=2;dashed=1;labelPosition=center;verticalLabelPosition=bottom;align=left;verticalAlign=top;spacingLeft=20;spacingTop=15;html=1;whiteSpace=wrap;" vertex="1" parent="99">
+                    <mxGeometry y="90" width="640" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="Update Reporter&lt;br&gt;Misuse Stats." style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeWidth=2;fontSize=16;entryX=-0.035;entryY=0.968;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="99">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="126.13000000000011" y="149.99999999999898" as="sourcePoint"/>
+                        <mxPoint x="590.3052000000007" y="149.99999999999898" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,18 @@
+/* static/css/styles.css */
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+    margin-right: 10px;
+}
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}

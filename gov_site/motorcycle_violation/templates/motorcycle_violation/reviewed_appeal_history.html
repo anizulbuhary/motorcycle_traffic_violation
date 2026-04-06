@@ -1,0 +1,51 @@
+{% extends 'motorcycle_violation/officer_base.html' %}
+
+{% block title %}Reviewed Appeal History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Reviewed Appeal History</h2>
+
+    {% if reviewed_appeals %}
+        <div class="table-responsive">
+            <table class="table table-bordered mt-4">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">License Plate</th>
+                        <th scope="col">Violation Type</th>
+                        <th scope="col">Appeal Status</th>
+                        <th scope="col">Appeal Created Date</th>
+                        <th scope="col">Appeal Reviewed Date</th>
+                        <th scope="col">Note by Citizen</th>
+                        <th scope="col">Cropped Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appeal in reviewed_appeals %}
+                        <tr>
+                            <td>{{ appeal.violation.license_plate }}</td>
+                            <td>{{ appeal.violation.violation_type }}</td>
+                            <td>{{ appeal.status }}</td>
+                            <td>{{ appeal.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ appeal.updated_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ appeal.reason }}</td>
+                            <td>
+                                {% if appeal.violation.cropped_image %}
+                                    <img src="{{ appeal.violation.cropped_image.url }}" alt="Cropped Image" style="width: 100px; height: auto;" />
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No reviewed appeals found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

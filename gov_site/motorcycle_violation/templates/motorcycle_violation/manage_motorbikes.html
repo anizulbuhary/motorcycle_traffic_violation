@@ -1,0 +1,78 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Manage Motorbikes{% endblock %}
+
+{% block content %}
+{% load custom_tags %}
+<div class="container mt-5">
+    <h2 class="text-center">Manage Your Motorbikes</h2>
+
+    <!-- Display success or error messages -->
+    {% if messages %}
+        <div class="alert alert-success" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Add Motorbike Form -->
+    <form method="POST" class="border p-4 rounded bg-light shadow">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}  <!-- Add Bootstrap class to the form field -->
+                {% for error in field.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" name="add_motorbike" class="btn btn-primary w-100">Add Motorbike</button>
+    </form>
+
+    <!-- List of Motorbikes -->
+    <h4 class="mt-4 text-center">Your Motorbikes</h4>
+    <ul class="list-group">
+        {% for motorcycle in motorcycles %}
+            <li class="list-group-item d-flex flex-column align-items-center mb-4">
+                <!-- Display License Plate Image -->
+                <img src="{{ motorcycle.plate_image_path }}" alt="{{ motorcycle }}" style="width: 100%; max-width: 400px; height: auto;" class="mb-3">
+
+                <!-- Display Motorcycle Model Name -->
+                <div class="text-center mb-3">
+                    <strong>{{ motorcycle}}</strong>
+                </div>
+
+                <!-- Remove Motorbike Form -->
+                <form method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="motorcycle_id" value="{{ motorcycle.id }}">
+                    <button type="submit" name="remove_motorbike" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-center">No motorbikes added yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+<!-- Centered Button with bottom spacing -->
+<div class="d-flex justify-content-center mt-3 mb-4">
+    <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+
+<!-- JavaScript to dismiss alerts after 3 seconds -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.display = 'none';  // Hide the alert
+            }, 3000);  // 3000 milliseconds = 3 seconds
+        });
+    });
+</script>
+
+{% endblock %}

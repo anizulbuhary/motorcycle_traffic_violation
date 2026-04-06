@@ -1,0 +1,36 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">All Motorbikes</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Registration Number</th>
+                    <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">CNIC</th>
+                    <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Fine Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for motorcycle in motorbikes %}
+                <tr>
+                    <td>{{ motorcycle.registration_number }}</td>
+                    <td>{{ motorcycle.owner.cnic }}</td> {# Assuming owner has a CNIC field #}
+                    <td>{{ motorcycle.fine_balance|default:"0.00" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No motorbikes found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Centered Button with bottom spacing -->
+<div class="d-flex justify-content-center mt-3 mb-4">
+    <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

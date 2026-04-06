@@ -1,0 +1,6 @@
+Django
+WeasyPrint
+ultralytics
+uuid
+qrcode
+moviepy

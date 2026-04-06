@@ -1,0 +1,345 @@
+<!-- templates/chatbot_widget.html -->
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Chatbot widget styles */
+  #chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+  }
+  
+  /* Floating chat button */
+  #chatbot-toggle {
+      background: #007bff;
+      border: none;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+  }
+  
+  #chatbot-toggle:hover {
+      transform: scale(1.1);
+  }
+  
+  #chatbot-toggle i {
+      font-size: 24px;
+  }
+  
+  /* Chat widget container */
+  .wrapper {
+      width: 370px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      display: none;
+      max-height: 80vh;
+      flex-direction: column;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 480px) {
+      #chatbot-container {
+          bottom: 10px;
+          right: 10px;
+          left: 10px;
+      }
+      
+      .wrapper {
+          width: 100%;
+          max-height: 70vh;
+          bottom: 80px;
+          right: 0;
+          left: 0;
+          position: fixed;
+      }
+      
+      #chatbot-toggle {
+          width: 50px;
+          height: 50px;
+      }
+  }
+  
+  /* Chat header */
+  .wrapper .title {
+      background: #007bff;
+      color: white;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+  
+  .wrapper .title i {
+      font-size: 20px;
+  }
+  
+  /* Chat messages area */
+  .wrapper .box {
+      padding: 15px;
+      flex: 1;
+      overflow-y: auto;
+      background: #f9f9f9;
+  }
+  
+  /* Individual message items */
+  .wrapper .box .item {
+      display: flex;
+      margin-bottom: 15px;
+  }
+  
+  .wrapper .box .item .icon {
+      background: #007bff;
+      color: white;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+  }
+  
+  .wrapper .box .item .msg {
+      background: #007bff;
+      color: white;
+      border-radius: 18px;
+      max-width: 70%;
+      margin-left: 10px;
+      padding: 10px 15px;
+      word-wrap: break-word;
+      line-height: 1.4;
+  }
+  
+  .wrapper .box .item .msg p {
+      margin: 0;
+  }
+  
+  /* Right-aligned messages (user) */
+  .wrapper .box .item.right {
+      flex-direction: row-reverse;
+  }
+  
+  .wrapper .box .item.right .msg {
+      background: #e5e5ea;
+      color: #333;
+      margin-right: 10px;
+      margin-left: 0;
+  }
+  
+  /* Input area */
+  .wrapper .typing-area {
+      background: #fff;
+      padding: 15px;
+      border-top: 1px solid #eee;
+  }
+  
+  .wrapper .typing-area .input-field {
+      width: 100%;
+      position: relative;
+      display: flex;
+  }
+  
+  .wrapper .typing-area .input-field input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      font-size: 14px;
+      transition: border-color 0.3s;
+  }
+  
+  .wrapper .typing-area .input-field input:focus {
+      border-color: #007bff;
+  }
+  
+  .wrapper .typing-area .input-field button {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      background: #007bff;
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+  }
+  
+  .wrapper .typing-area .input-field button:hover {
+      background: #0069d9;
+  }
+  
+  /* Bot icon specific styling */
+  .bot-icon {
+      background: #007bff;
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+  }
+</style>
+
+<div id="chatbot-container">
+  <!-- Floating Chat Button -->
+  <button id="chatbot-toggle" aria-label="Open chat">
+    <i class="fas fa-comment-dots"></i>
+  </button>
+  
+  <!-- Chat Widget (hidden by default) -->
+  <div class="wrapper" id="chatbot-widget">
+      <div class="title">
+          <i class="fas fa-robot"></i>
+          <span>Moto Bot</span>
+      </div>
+      <div class="box" id="chatbot-messages">
+          <!-- Chat messages will be appended here -->
+      </div>
+      <div class="typing-area">
+          <div class="input-field">
+              <input type="text" id="chatbot-input" placeholder="Type your message..." required>
+              <button id="chatbot-send" aria-label="Send message">
+                  <i class="fas fa-paper-plane"></i>
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const toggleBtn = document.getElementById("chatbot-toggle");
+    const widget = document.getElementById("chatbot-widget");
+    const sendBtn = document.getElementById("chatbot-send");
+    const inputField = document.getElementById("chatbot-input");
+    const messagesBox = document.getElementById("chatbot-messages");
+
+    // Function to append messages
+    function appendMessage(sender, message, align="left") {
+      const item = document.createElement("div");
+      item.className = "item " + (align === "right" ? "right" : "");
+      
+      // Icon div
+      const iconDiv = document.createElement("div");
+      iconDiv.className = "icon";
+      
+      if (sender === "You") {
+        iconDiv.innerHTML = '<i class="fas fa-user"></i>';
+      } else {
+        // Custom bot icon with different style
+        iconDiv.innerHTML = '<i class="fas fa-robot"></i>';
+        iconDiv.style.backgroundColor = '#007bff';
+      }
+      
+      // Message div
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "msg";
+      msgDiv.innerHTML = "<p>" + message + "</p>";
+      
+      item.appendChild(iconDiv);
+      item.appendChild(msgDiv);
+      messagesBox.appendChild(item);
+      
+      // Auto-scroll to bottom
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    // Toggle widget visibility
+    toggleBtn.addEventListener("click", function(event) {
+      event.stopPropagation(); // Prevent document click from immediately hiding widget
+      const isHidden = window.getComputedStyle(widget).display === "none";
+      if (isHidden) {
+        widget.style.display = "flex";
+        // Clear previous messages and show welcome message
+        messagesBox.innerHTML = "";
+        appendMessage("Bot", "Hello! I'm Moto Bot. How can I assist you today? Type 'help' for options.");
+      } else {
+        widget.style.display = "none";
+      }
+    });
+    
+    // Close chat when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!widget.contains(event.target) && event.target !== toggleBtn) {
+        widget.style.display = "none";
+      }
+    });
+
+    // Handle message send
+    function sendMessage() {
+      const message = inputField.value.trim();
+      if (!message) return;
+      
+      appendMessage("You", message, "right");
+      inputField.value = "";
+      
+      // Show typing indicator
+      const typingIndicator = document.createElement("div");
+      typingIndicator.className = "item";
+      typingIndicator.innerHTML = `
+        <div class="icon"><i class="fas fa-robot"></i></div>
+        <div class="msg"><p><i>Typing...</i></p></div>
+      `;
+      messagesBox.appendChild(typingIndicator);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+      
+      // Remove typing indicator after a short delay
+      setTimeout(() => {
+        typingIndicator.remove();
+        
+        // Send message to AI chatbot API endpoint
+        fetch("{% url 'chatbot_api' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          appendMessage("Bot", data.reply);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          appendMessage("Bot", "Sorry, I'm having trouble responding right now. Please try again later.");
+        });
+      }, 500);
+    }
+
+    // Send button click handler
+    sendBtn.addEventListener("click", sendMessage);
+
+    // Enter key handler
+    inputField.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  });
+</script>

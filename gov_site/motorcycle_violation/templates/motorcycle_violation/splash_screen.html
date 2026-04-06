@@ -1,0 +1,45 @@
+<!-- templates/motorcycle_violation/splash_screen.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo {
+            width: 300px;
+            height: 300px;
+        }
+        .splash-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen">
+        <img src="{% static 'motorcycle_violation/images/logo_whit.png' %}" alt="Logo" class="logo">
+        <h1>Welcome!</h1>
+        <p>Redirecting to your dashboard...</p>
+    </div>
+
+    <script>
+        // Set a timeout to redirect after 3 seconds
+        setTimeout(() => {
+            // Redirect based on the user type passed from the view
+            const userType = "{{ user_type }}"; // Get the user type from Django context
+            if (userType === 'citizen') {
+                window.location.href = "{% url 'citizen_dashboard' %}";
+            } else if (userType === 'officer') {
+                window.location.href = "{% url 'officer_dashboard' %}";
+            }
+        }, 3000); // 3000 ms = 3 seconds
+    </script>
+</body>
+</html>

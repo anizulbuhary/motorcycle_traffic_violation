@@ -1,0 +1,32 @@
+{% extends 'motorcycle_violation/base.html' %}
+{% load static %}
+
+{% block title %}Report Violation Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Report Violation Detail</h2>
+
+    <h4 class="text-center">Detected Violation Class: {{ violation_class }}</h4>
+
+    <!-- Display cropped image -->
+    {% if cropped_image_path %}
+    <div class="text-center mb-4">
+        <img src="/media/{{ cropped_image_path }}" alt="Cropped Image" class="img-fluid" style="max-width: 100%; height: auto;">
+    </div>
+    {% endif %}
+
+    <!-- License plate submission form -->
+    <h3 class="text-center">Enter License Plate</h3>
+    <form method="POST" action="{% url 'report_violation_detail' %}" class="border p-4 rounded bg-light shadow">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="license_plate" class="form-label">License Plate Number</label>
+            <input type="text" name="license_plate" class="form-control" id="license_plate" placeholder="e.g., ABC1234" required>
+        </div>
+        <input type="hidden" name="detected_violation" value="{{ violation_class }}">
+        <input type="hidden" name="cropped_image_path" value="{{ cropped_image_path }}">
+        <button type="submit" class="btn btn-success w-100 mt-3">Submit License Plate</button>
+    </form>
+</div>
+{% endblock %}

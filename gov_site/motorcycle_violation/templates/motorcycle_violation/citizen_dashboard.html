@@ -1,0 +1,211 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <h2 class="text-center">Welcome, {{ user.username }}</h2>
+    <p class="text-center">You are logged in as a {{ user.get_user_type_display }}.</p>
+
+    <!-- Danger message placeholder (hidden by default) -->
+    <div id="locked-message" class="alert alert-danger d-none" role="alert">
+        This option is locked while you are suspended.
+    </div>
+
+<!-- Overview Cards Row -->
+<div class="row mt-4">
+    <!-- Total Fines Card -->
+    <div class="col-md-4 mb-4 d-flex">
+        <div class="card text-white bg-danger shadow w-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Fines</h5>
+                <p class="card-text" style="font-size: 24px;">{{ total_fine }} PKR</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suspension Fines Card -->
+    <div class="col-md-4 mb-4 d-flex">
+        <div class="card text-white bg-warning shadow w-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Suspension Fines</h5>
+                <p class="card-text" style="font-size: 24px;">{{ total_suspension_fines }} PKR</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Credits Card -->
+    <div class="col-md-4 mb-4 d-flex">
+        <div class="card text-white bg-success shadow w-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Credits</h5>
+                <p class="card-text" style="font-size: 24px;">{{ total_credits }} PKR</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Payable Amount Logic -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            {% if payable_amount > 0 %}
+                <div class="alert alert-warning text-center">
+                    <strong>Payable Amount: {{ payable_amount }} PKR</strong>
+                </div>
+            {% else %}
+                <div class="alert alert-warning text-center">
+                    <strong>No Payable Amount</strong>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Report Violation Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">Report Violation</h5>
+        
+        {% if user.citizen_profile.is_currently_suspended %}
+            <div class="col-md-6 mb-3 text-center">
+                <a href="#"
+                   class="btn btn-dark w-100 shadow-sm"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   title="Locked"
+                   onclick="showLockedMessage(); return false;">
+                    <i class="bi bi-lock"></i> Upload Image (Locked)
+                </a>
+            </div>
+            <div class="col-md-6 mb-3 text-center">
+                <a href="#"
+                   class="btn btn-dark w-100 shadow-sm"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   title="Locked"
+                   onclick="showLockedMessage(); return false;">
+                    <i class="bi bi-lock"></i> Upload Video (Locked)
+                </a>
+            </div>
+        {% else %}
+            <div class="col-md-6 mb-3 text-center">
+                <a href="{% url 'report_violation' %}" class="btn btn-dark w-100 shadow-sm">
+                    <i class="bi bi-file-earmark-plus"></i> Upload Image
+                </a>
+            </div>
+            <div class="col-md-6 mb-3 text-center">
+                <a href="{% url 'upload_video' %}" class="btn btn-dark w-100 shadow-sm">
+                    <i class="bi bi-upload"></i> Upload Video
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- History Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">View History</h5>
+        
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'report_history' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-clock-history"></i> Report History
+            </a>
+        </div>
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'fine_history' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-journal-text"></i> Fines History
+            </a>
+        </div>
+    </div>
+
+    <!-- Motorbike Management Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">Motorbike Management</h5>
+        
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'manage_motorbikes' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-bicycle"></i> Manage Motorbike
+            </a>
+        </div>
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'see_all_motorbikes' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-eye"></i> View All Motorbikes
+            </a>
+        </div>
+    </div>
+
+    <!-- Receipt Management Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">Receipt Management</h5>
+        
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'download_receipt' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-download"></i> Download Receipt
+            </a>
+        </div>
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'receipt_history' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-card-text"></i> Receipt History
+            </a>
+        </div>
+    </div>
+
+    <!-- Appeal Management Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">Appeals</h5>
+        
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'file_appeal' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-exclamation-circle"></i> Appeal Violation
+            </a>
+        </div>
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'appeal_history' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-archive"></i> Appeal History
+            </a>
+        </div>
+    </div>
+    
+    <!-- Suspensions Section -->
+    <div class="row mt-4">
+        <h5 class="text-center w-100">Suspensions</h5>
+        
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'suspension_overview' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-bar-chart"></i> Suspension Overview
+            </a>
+        </div>
+        <div class="col-md-6 mb-3 text-center">
+            <a href="{% url 'suspension_history' %}" class="btn btn-dark w-100 shadow-sm">
+                <i class="bi bi-archive"></i> Suspension History
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer Section -->
+<footer class="bg-white text-black py-3 mt-5">
+    <div class="container text-center">
+        <p class="mb-1">&copy; 2025 SafeRide. All Rights Reserved.</p>
+        <p class="mb-0">Ensuring safety, one ride at a time.</p>
+    </div>
+</footer>
+
+<!-- Initialize Bootstrap Tooltips -->
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Function to show locked message inline
+    function showLockedMessage() {
+        var messageDiv = document.getElementById('locked-message');
+        messageDiv.classList.remove('d-none');
+        // Optionally, hide the message after a few seconds:
+        setTimeout(function() {
+            messageDiv.classList.add('d-none');
+        }, 4000);
+    }
+</script>
+{% endblock %}

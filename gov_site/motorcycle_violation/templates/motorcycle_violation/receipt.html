@@ -1,0 +1,73 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Receipt{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if no_receipt %}
+        <div class="alert alert-warning text-center" role="alert">
+            No receipt can be generated as both fines and credits are zero.
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'citizen_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Your receipt has been generated. You can download it now or access it later from your <a href="{% url 'receipt_history' %}">receipt history</a>.
+        </div>
+
+        <h1 class="text-center">Receipt</h1>
+        <div class="card shadow-lg mt-4 mx-auto" style="max-width: 600px;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Receipt Details</h5>
+                <hr>
+                <p><strong>Username:</strong> {{ user_name }}</p>
+                <p><strong>Email:</strong> {{ user_email }}</p>
+                <p><strong>CNIC:</strong> {{ user_cnic }}</p>
+                <p><strong>Receipt ID:</strong> {{ receipt_id }}</p>
+                <p><strong>Created At:</strong> {{ created_at|date:"D, d M Y H:i:s" }}</p>
+                <p><strong>Current Fines:</strong> PKR {{ current_fines|floatformat:2 }}</p>
+                <p><strong>Current Credits:</strong> PKR {{ current_credits|floatformat:2 }}</p>
+                <p><strong>Suspension Fines:</strong> PKR {{ suspension_fines|floatformat:2 }}</p>
+
+                <p><strong>
+                    {% if status == 'Redeemable' %}
+                        Redeemable Amount:
+                    {% else %}
+                        Payable Amount:
+                    {% endif %}
+                </strong> 
+                PKR {{ payable_amount|floatformat:2 }}</p>
+
+                <p><strong>Status:</strong> {{ status }}</p>
+                <p><strong>Receipt Status:</strong> {{ receipt_status }}</p>
+                <p><strong>Status Updated At:</strong> {{ status_updated_at }}</p>
+
+                <h5 class="mt-4">Motorcycle Fines:</h5>
+                <ul class="list-group">
+                    {% for motorcycle in motorcycles %}
+                        <li class="list-group-item">
+                            <strong>License Plate:</strong> {{ motorcycle.motorcycle.registration_number }} - 
+                            <strong>Fine:</strong> PKR {{ motorcycle.fine_balance|floatformat:2 }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="text-center mt-4">
+                    <h6>QR Code:</h6>
+                    <img src="{{ qr_image_data }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;"/>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'download_receipt_pdf' receipt_id %}" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Download Receipt as PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'citizen_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

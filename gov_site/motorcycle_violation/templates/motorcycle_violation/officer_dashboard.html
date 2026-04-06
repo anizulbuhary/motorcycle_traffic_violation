@@ -1,0 +1,77 @@
+{% extends 'motorcycle_violation/officer_base.html' %}
+
+{% block title %}Officer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center display-4 mb-4">Welcome, {{ user.username }}</h2>
+    <p class="text-center lead mb-5">You are logged in as an <strong>{{ user.get_user_type_display }}</strong>.</p>
+
+    <!-- Dashboard Summary -->
+    <div class="row text-center mb-5">
+        <!-- Total Reviewed Appeals -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-primary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Reviewed Appeals</h5>
+                    <p class="display-4">{{ reviewed_appeals_count }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Total Pending Appeals -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Pending Appeals</h5>
+                    <p class="display-4">{{ pending_appeals_count }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Officer Activity (Example: Appeals Handled Today) -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Appeals Handled Today</h5>
+                    <p class="display-4">{{ appeals_handled_today_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-5">
+        <!-- Review Appeals Button -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <a href="{% url 'review_appeals' %}" class="btn btn-outline-primary btn-lg w-100">Review Appeals</a>
+                </div>
+            </div>
+        </div>
+        <!-- Reviewed Appeal History Button -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <a href="{% url 'reviewed_appeal_history' %}" class="btn btn-outline-secondary btn-lg w-100">Reviewed Appeal History</a>
+                </div>
+            </div>
+        </div>
+        <!-- New: View Receipts Button -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <a href="{% url 'receipt_list' %}" class="btn btn-outline-success btn-lg w-100">View Receipts</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-white text-black py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 SafeRide. All Rights Reserved.</p>
+            <p class="mb-0">Ensuring safety, one ride at a time.</p>
+        </div>
+    </footer>
+</div>
+{% endblock %}

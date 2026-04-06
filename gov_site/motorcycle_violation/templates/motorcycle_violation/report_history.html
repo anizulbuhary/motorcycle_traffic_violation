@@ -1,0 +1,92 @@
+{% extends 'motorcycle_violation/base.html' %}
+{% load static %}
+
+{% block title %}Report History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Centered Title -->
+    <h2 class="text-center">Your Reported Violations</h2>
+
+    {% if violations %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">License Plate</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Violation Type</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Reported On</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Cropped Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for violation in violations %}
+                    <tr>
+                        <td>{{ violation.license_plate }}</td>
+                        <td>{{ violation.violation_type }}</td>
+                        <td>{{ violation.timestamp|date:"Y-m-d H:i" }}</td>
+                        <td class="text-center align-middle">
+                            {% if violation.cropped_image %}
+                                <a href="#" class="view-image" data-image-url="{{ violation.cropped_image.url }}">
+                                    <i class="bi bi-eye" style="font-size: 1.5rem;"></i>
+                                </a>
+                                <img src="" alt="Cropped Image" class="img-fluid centered-image" style="display: none; max-width: 100px; margin-top: 10px;" />
+                            {% else %}
+                                No image
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No reported violations found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4">
+            <strong>No reported violations found.</strong>
+        </div>
+    {% endif %}
+
+    <!-- Centered Button with bottom spacing -->
+    <div class="d-flex justify-content-center mt-3 mb-4">
+        <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    .centered-image {
+        display: block;
+        margin: 0 auto;
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    .align-middle {
+        vertical-align: middle !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewImageLinks = document.querySelectorAll('.view-image');
+
+        viewImageLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const imageUrl = this.getAttribute('data-image-url');
+                const cell = this.closest('td');
+                const placeholder = cell.querySelector('img');
+                const icon = this.querySelector('i');
+
+                placeholder.src = imageUrl;
+                placeholder.style.display = 'block';
+                this.style.display = 'none';
+            });
+        });
+    });
+</script>
+
+{% endblock %}

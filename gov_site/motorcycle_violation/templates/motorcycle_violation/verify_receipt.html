@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Verification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Use Bootstrap CDN for styling -->
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background for better contrast */
+        }
+        .card {
+            border-radius: 10px; /* Rounded corners */
+        }
+        .verified {
+            color: #28a745; /* Green color for verified messages */
+        }
+        .unverified {
+            color: #dc3545; /* Red color for unverified messages */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Receipt Verification</h1>
+        <div class="card mt-4 mx-auto" style="max-width: 600px;">
+            <div class="card-body">
+                {% if verified %}
+                    <h5 class="card-title">Receipt ID: <span class="verified">{{ receipt.receipt_id }}</span></h5>
+                    <p><strong>Username:</strong> {{ receipt.user.user.username }}</p>
+                    <p><strong>Email:</strong> {{ receipt.user.user.email }}</p>                    
+                    <p><strong>CNIC:</strong> {{ receipt.user.cnic }}</p>
+                    <p><strong>Current Fines:</strong> PKR {{ receipt.current_fines|floatformat:2 }}</p>
+                    <p><strong>Current Credits:</strong> PKR {{ receipt.current_credits|floatformat:2 }}</p>
+                    <p><strong>Suspension Fines:</strong> PKR {{ receipt.suspension_fines|floatformat:2 }}</p>
+                    <p><strong>Payable Amount:</strong> PKR {{ receipt.payable_amount|floatformat:2 }}</p>
+                    <p><strong>Created At:</strong> {{ receipt.created_at|date:"D, d M Y H:i:s" }}</p>
+                    <p><strong>Receipt Status:</strong> {{ receipt_status }}</p>
+                    <p><strong>Status Updated At:</strong> {{ status_updated_at }}</p>
+
+                    <h5 class="mt-4">Motorcycle Details:</h5>
+                    <ul class="list-group">
+                        {% for motorcycle_receipt in motorcycle_receipts %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>License Plate:</strong> {{ motorcycle_receipt.motorcycle.registration_number }} - 
+                                    <strong>Fine:</strong> PKR {{ motorcycle_receipt.fine_balance|floatformat:2 }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="text-center mt-4">
+                        <p class="verified"><em>This receipt has been verified.</em></p>
+                    </div>
+                {% else %}
+                    <h5 class="unverified">This receipt could not be verified.</h5>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

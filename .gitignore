@@ -1,0 +1,44 @@
+# Ignore Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# Ignore virtual environment
+venv/
+env/
+.venv/
+
+# Ignore Django migrations
+*/migrations/*
+
+# Ignore database files
+*.sqlite3
+*.db
+
+# Ignore compiled files
+*.log
+*.pot
+*.pyc
+*.so
+*.gz
+*.zip
+
+# Ignore media and static files (optional if generated dynamically)
+media/
+staticfiles/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+
+# Ignore environment settings
+.env
+gov_site/s3_test.py
+gov_site/s3.env
+gov_site/imp.env
+
+docker-compose.yml
+Dockerfile
+.dockerignore

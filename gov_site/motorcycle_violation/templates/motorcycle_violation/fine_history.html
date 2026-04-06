@@ -1,0 +1,120 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Fine History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Fine History</h2>
+    {% if fines %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Violation Type</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">License Plate</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Fine Amount</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Timestamp</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Status</th>
+                        <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Cropped Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fine in fines %}
+                        <tr class="{% if fine.is_downloaded or fine.is_appealed == 'accepted' %}table-success{% else %}table-danger{% endif %}">
+                            <td>{{ fine.violation_type }}</td>
+                            <td>{{ fine.license_plate }}</td>
+                            <td>PKR {{ fine.fine_amount|floatformat:2 }}</td>
+                            <td>{{ fine.timestamp|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if fine.is_appealed == 'no' or fine.is_appealed == 'rejected' %}
+                                    {% if fine.is_downloaded %}
+                                        Receipt Generated
+                                    {% else %}
+                                        Pending
+                                    {% endif %}
+                                {% elif fine.is_appealed == 'yes' %}
+                                    Pending
+                                {% elif fine.is_appealed == 'accepted' %}
+                                    Removed
+                                {% else %}
+                                    Unknown Status
+                                {% endif %}
+                            </td>
+                            <td class="text-center align-middle">
+                                {% if fine.cropped_image %}
+                                    <a href="#" class="view-image" data-image-url="{{ fine.cropped_image.url }}">
+                                        <i class="bi bi-eye" style="font-size: 1.5rem;"></i>
+                                    </a>
+                                {% else %}
+                                    No Image
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No fines found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <strong>No fines found.</strong>
+        </div>
+    {% endif %}
+    <!-- Centered Button with bottom spacing -->
+    <div class="d-flex justify-content-center mt-3 mb-4">
+        <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- Modal structure -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Cropped Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="modalImage" class="img-fluid" alt="Cropped Image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .centered-image {
+        display: block;
+        margin: 0 auto;
+        max-width: 100px;
+        max-height: 100px;
+    }
+    .align-middle {
+        vertical-align: middle !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewImageLinks = document.querySelectorAll('.view-image');
+
+        viewImageLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const imageUrl = this.getAttribute('data-image-url');
+                
+                // Set the image in the modal
+                const modalImage = document.getElementById('modalImage');
+                modalImage.src = imageUrl;
+                
+                // Show the modal
+                const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+                imageModal.show();
+            });
+        });
+    });
+</script>
+
+{% endblock %}

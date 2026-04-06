@@ -1,0 +1,69 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Receipt History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Receipt History</h2>
+    {% if receipts %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Receipt ID</th>
+                        <th>Current Fines</th>
+                        <th>Current Credits</th>
+                        <th>Suspension Fines</th>
+                        <th>Payable Amount</th>
+                        <th>Type</th>
+                        <th>Date Created</th>
+                        <th>Paid / Redeemed Date</th>
+                        <th>Download Receipt</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                        <tr class="{% if receipt.status|lower == 'paid' or receipt.status|lower == 'redeemed' %}table-success{% endif %}">
+                            <td>{{ receipt.receipt_id }}</td>
+                            <td>PKR {{ receipt.current_fines|floatformat:2 }}</td>
+                            <td>PKR {{ receipt.current_credits|floatformat:2 }}</td>
+                            <td>PKR {{ receipt.suspension_fines|floatformat:2 }}</td>
+                            <td>PKR {{ receipt.payable_amount|floatformat:2 }}</td>
+                            <td>
+                                {% if receipt.payable_amount > 0 %}
+                                    {{ "Payable"|capfirst }}
+                                {% else %}
+                                    {{ "Redeemable"|capfirst }}
+                                {% endif %}
+                            </td>
+                            <td>{{ receipt.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if receipt.status_updated_at %}
+                                    {{ receipt.status_updated_at|date:"Y-m-d H:i" }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'download_receipt_pdf' receipt.receipt_id %}" class="btn btn-secondary btn-sm">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                            </td>
+                            <td>{{ receipt.status|lower|capfirst }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <strong>No receipts found.</strong>
+        </div>
+    {% endif %}
+   <!-- Centered Button with bottom spacing -->
+<div class="d-flex justify-content-center mt-3 mb-4">
+    <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+</div>
+{% endblock %}

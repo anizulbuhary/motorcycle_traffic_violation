@@ -1,0 +1,422 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SafeRide - Landing Page{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'motorcycle_violation/icons/icon-96.png' %}">
+  <!-- Bootswatch Lux Theme -->
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{% static 'motorcycle_violation/css/styles.css' %}">
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', sans-serif; }
+    /* Hero */
+    .hero {
+      position: relative;
+      background: url('{% static "motorcycle_violation/images/hero-bg.jpg" %}') no-repeat center/cover;
+      color: #fff;
+      height: 85vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(2px);
+      z-index: 1;
+    }
+    .hero .container { position: relative; z-index:2; }
+    .hero h1 { font-size: 3.75rem; font-weight: 700; animation: slideInDown 1s ease-out; }
+    .hero p { font-size: 1.5rem; margin:1rem 0; animation: fadeIn 1.2s ease-out; }
+    .btn-cta { padding:0.75rem 2rem; animation: pulse 2s infinite; }
+    @keyframes slideInDown { from { opacity:0; transform: translateY(-50px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    @keyframes pulse {0%,100%{transform:scale(1);}50%{transform:scale(1.05);} }
+    /* Features */
+    .features .card { border: none; border-radius:1rem; transition: transform .3s, box-shadow .3s; }
+    .features .card:hover { transform: translateY(-8px); box-shadow:0 8px 20px rgba(0,0,0,0.2);}    
+    .feature-icon { font-size:3rem; color: #0d6efd; }
+    /* Engagement */
+    .engage { background: #f8f9fa; padding:4rem 0; }
+    /* Technology */
+    .tech-logos img { max-width:80px; opacity:.8; transition: opacity .3s; }
+    .tech-logos img:hover { opacity:1; }
+    /* Stats */
+    .stats { background:url('{% static "motorcycle_violation/images/stats-bg.jpg" %}') center/cover; color:#fff; padding:4rem 0; position: relative; }
+    .stats::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.6); }
+    .stats .container { position:relative; z-index:2; }
+    .stats .counter { font-size:2.5rem; font-weight:700; }
+    /* About */
+    .about { padding:4rem 0; text-align:center; }
+    /* Footer */
+    footer { background:#212529; color:#adb5bd; }
+    footer a { color:#adb5bd; transition: color .2s; }
+    footer a:hover { color:#fff; }
+    @media (max-width:768px) {
+      .hero h1 { font-size:2.5rem; }
+      .hero p { font-size:1rem; }
+    }
+
+      .offer-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fff;
+    height: 100%;
+  }
+
+  .offer-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .offer-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .offer-card:hover .offer-icon {
+    transform: scale(1.1);
+  }
+  </style>
+</head>
+<body>
+<header>
+  <!-- Responsive Navbar -->
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'landing_page' %}">
+        <img src="{% static 'motorcycle_violation/images/logo.jpg' %}" 
+            alt="Logo" 
+            class="me-2" 
+            style="height: 60px; width: 60px; object-fit: cover; border-radius: 50%;">
+        <span class="fw-bold">Safe Ride</span>
+        </a>
+
+
+      <!-- Toggler for Mobile -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible Navigation Links -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#footer">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About Us</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="container" data-aos="zoom-in">
+            <h1>Welcome to Safe-Ride</h1>
+            <p>Experience a safer journey with our innovative motorcycle violation detection system.</p>
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg btn-cta">Submit a Violation</a>
+        </div>
+    </section>
+
+  <!-- Features -->
+  <section id="features" class="features py-5">
+    <div class="container">
+      <h2 class="text-center mb-4" data-aos="fade-up">Key Features</h2>
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card text-center p-4 h-100">
+            <i class="bi bi-people feature-icon mb-3"></i>
+            <h5>Multi-Rider Detection</h5>
+            <p>Automatically identifies when more than one rider is on a motorcycle.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card text-center p-4 h-100">
+            <i class="bi bi-shield-check feature-icon mb-3"></i>
+            <h5>Helmet Classification</h5>
+            <p>Detects proper helmet usage to enhance rider safety compliance.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="card text-center p-4 h-100">
+            <i class="bi bi-upc-scan feature-icon mb-3"></i>
+            <h5>License Plate Recognition</h5>
+            <p>Reads and logs number plates in real time for automated reporting.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- Citizen Engagement -->
+<section id="engage" class="engage text-center" data-aos="fade-in">
+  <div class="container">
+    <h2 class="text-dark">Citizen Engagement</h2>
+    <p class="mb-3 text-secondary">
+      Upload images or videos of traffic violations directly from your device. 
+      Your contribution helps keep our roads safe.
+    </p>
+    <p class="mb-4 text-dark fw-semibold">
+      <strong>Earn credits</strong> for each valid report — contribute responsibly and be rewarded!
+    </p>
+    <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Get Involved</a>
+  </div>
+</section>
+
+
+
+  <!-- Technology Used -->
+  <section class="py-5">
+    <div class="container text-center">
+      <h2 data-aos="fade-up">Technology Stack</h2>
+      <div class="row tech-logos justify-content-center align-items-center mt-4 g-3">
+        
+        <!-- YOLO -->
+        <div class="col-12 col-sm-2" data-aos="zoom-in" data-aos-delay="100">
+          <img src="{% static 'motorcycle_violation/logos/ultralytics.svg' %}" 
+              alt="YOLO" class="img-fluid" style="max-height: 70px; max-width: 100px;">
+        </div>
+
+        <!-- PyTorch -->
+        <div class="col-12 col-sm-2" data-aos="zoom-in" data-aos-delay="200">
+          <img src="{% static 'motorcycle_violation/logos/Pytorch.png' %}" 
+              alt="PyTorch" class="img-fluid" style="max-height: 100px; max-width: 140px;">
+        </div>
+
+        <!-- OpenCV -->
+        <div class="col-12 col-sm-2" data-aos="zoom-in" data-aos-delay="300">
+          <img src="{% static 'motorcycle_violation/logos/OpenCV.svg' %}" 
+              alt="OpenCV" class="img-fluid" style="max-height: 80px; max-width: 100px;">
+        </div>
+
+        <!-- Django -->
+        <div class="col-12 col-sm-2" data-aos="zoom-in" data-aos-delay="400">
+          <img src="{% static 'motorcycle_violation/logos/django.svg' %}" 
+              alt="Django" class="img-fluid" style="max-height: 100px; max-width: 140px;">
+        </div>
+
+        <!-- FastAPI -->
+        <div class="col-12 col-sm-2" data-aos="zoom-in" data-aos-delay="500">
+          <img src="{% static 'motorcycle_violation/logos/fastapi.png' %}" 
+              alt="FastAPI" class="img-fluid" style="max-height: 110px; max-width: 160px;">
+        </div>
+
+
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- Live Statistics -->
+  <section id="stats" class="stats text-center">
+    <div class="container">
+      <h2 class="mb-4" data-aos="fade-up">Live Statistics</h2>
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="counter" data-target="12458">0</div>
+          <p>Reports Submitted</p>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="counter" data-target="97.6">0%</div>
+          <p>Detection Accuracy</p>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="counter" data-target="19234">0</div>
+          <p>Violations Processed</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- About the Project -->
+<section id="about" class="about py-5" style="background-color: #f7f9fc;" data-aos="zoom-in">
+  <div class="container text-center">
+    <h2 class="mb-4 fw-bold text-dark">About the Project</h2>
+    <p class="lead mb-4 text-secondary">
+      <strong>SafeRide</strong> addresses the rising danger of motorcycle-related traffic violations by combining AI-powered detection and citizen participation in a unified enforcement system.
+    </p>
+
+  <!-- Learn More Button -->
+<button id="learnMoreBtn" class="btn btn-primary mb-4" type="button"
+        data-bs-toggle="collapse" data-bs-target="#aboutExpanded"
+        aria-expanded="false" aria-controls="aboutExpanded">
+  Learn More
+</button>
+
+
+    <!-- Expanded Section -->
+    <div class="collapse" id="aboutExpanded">
+      <!-- Key Statistics -->
+      <div class="row g-4 mb-5 mt-4">
+        <div class="col-12 col-md-4" data-aos="fade-up">
+          <h3 class="display-5 fw-bold text-primary"><span class="count" data-count="45">0</span>%</h3>
+          <p class="text-dark">Crashes caused by motorcycles in Karachi</p>
+        </div>
+        <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <h3 class="display-5 fw-bold text-primary"><span class="count" data-count="613">0</span>%</h3>
+          <p class="text-dark">Motorcycle ownership surge since 2000</p>
+        </div>
+        <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <h3 class="display-5 fw-bold text-primary"><span class="count" data-count="70">0</span>%</h3>
+          <p class="text-dark">Injury risk reduction from wearing helmets</p>
+        </div>
+      </div>
+
+      <!-- Why SafeRide -->
+      <div class="row mb-5">
+        <div class="col-lg-8 offset-lg-2">
+          <p class="text-secondary fs-5">
+            These alarming statistics highlight a pressing need for smarter, scalable, and citizen-inclusive traffic enforcement.
+            That’s why we created <strong>SafeRide</strong> — to bridge the gap between detection, accountability, and public awareness using cutting-edge AI and intuitive digital tools.
+          </p>
+        </div>
+      </div>
+
+      <!-- What We Offer -->
+            <div class="row g-4 text-center">
+        <div class="col-12 col-md-4" data-aos="fade-up">
+            <div class="offer-card h-100">
+            <i class="bi bi-person-video3 fs-1 text-primary mb-3 offer-icon"></i>
+            <h5 class="fw-semibold text-dark">AI-Powered Detection</h5>
+            <p class="text-secondary">Real-time identification of helmet violations and multiple riders using YOLOv11m.</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="offer-card h-100">
+            <i class="bi bi-upload fs-1 text-primary mb-3 offer-icon"></i>
+            <h5 class="fw-semibold text-dark">Citizen Reporting</h5>
+            <p class="text-secondary">Anyone can upload videos or images of violations directly via our portal.</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="offer-card h-100">
+            <i class="bi bi-shield-check fs-1 text-primary mb-3 offer-icon"></i>
+            <h5 class="fw-semibold text-dark">Officer Dashboard</h5>
+            <p class="text-secondary">Manage violations, appeals, repeat offenders, and issue fines efficiently.</p>
+            </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer id="footer" style="background-color:rgb(60, 60, 60); color: #e9ecef;" class="py-4">
+  <div class="container text-center">
+    <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+
+    <!-- Contact -->
+    <span>
+      📧 <a href="mailto:anizulbuhary@gmail.com" class="text-decoration-none text-light">anizulbuhary@gmail.com</a>
+    </span>
+
+
+      <!-- GitHub -->
+      <span>
+        <a href="https://github.com/anizulbuhary/motorcycle_traffic_violation" target="_blank" class="text-light text-decoration-none">
+          <i class="bi bi-github"></i> GitHub Repository
+        </a>
+      </span>
+
+      <!-- Privacy Policy -->
+      <span>
+        <a href="#" class="text-light text-decoration-none">Privacy Policy</a>
+      </span>
+
+    </div>
+
+    <p class="small text-muted mt-3 mb-0">&copy; 2025 <strong>SafeRide</strong>. All Rights Reserved.</p>
+  </div>
+</footer>
+
+
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.4.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: true });
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+      const update = () => {
+        const target = +counter.dataset.target;
+        const count = +counter.innerText.replace('%','');
+        const inc = target/200;
+        if(count<target) {
+          counter.innerText = Math.ceil(count+inc) + (counter.innerText.includes('%')? '%':'');
+          setTimeout(update, 10);
+        } else {
+          counter.innerText = target + (counter.innerText.includes('%')? '%':'');
+        }
+      };
+      update();
+    });
+  </script>
+    <!-- Counter Script -->
+    <script>
+  function runCounters() {
+    const counters = document.querySelectorAll(".count");
+    counters.forEach(counter => {
+      const updateCount = () => {
+        const target = +counter.getAttribute("data-count");
+        const count = +counter.innerText;
+        const speed = 20;
+        const increment = Math.ceil(target / speed);
+        if (count < target) {
+          counter.innerText = count + increment;
+          setTimeout(updateCount, 30);
+        } else {
+          counter.innerText = target;
+        }
+      };
+      updateCount();
+    });
+  }
+
+  // Run counter when collapse is shown
+  document.addEventListener("DOMContentLoaded", () => {
+    const collapseEl = document.getElementById("aboutExpanded");
+
+    if (collapseEl) {
+      collapseEl.addEventListener('shown.bs.collapse', () => {
+        runCounters();
+      });
+    }
+  });
+</script>
+<script>
+  const learnMoreBtn = document.getElementById('learnMoreBtn');
+  const aboutExpanded = document.getElementById('aboutExpanded');
+
+  aboutExpanded.addEventListener('shown.bs.collapse', () => {
+    learnMoreBtn.style.display = 'none';
+  });
+</script>
+
+  <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+</body>
+</html>

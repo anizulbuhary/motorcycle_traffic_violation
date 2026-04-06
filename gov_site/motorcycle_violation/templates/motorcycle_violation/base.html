@@ -1,0 +1,77 @@
+{% load static %} 
+{% load custom_tags %}  <!-- Load your custom tags here --> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My App{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'motorcycle_violation/icons/icon-96.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'motorcycle_violation/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        .alert {
+            margin-bottom: 20px; /* Space below the alert */
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'citizen_dashboard' %}">
+                <img src="{% static 'motorcycle_violation/images/logo.jpg' %}" 
+            alt="Logo" 
+            class="me-2" 
+            style="height: 60px; width: 60px; object-fit: cover; border-radius: 50%;">
+            <span class="fw-bold">Safe Ride</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'citizen_dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Include Chatbot Widget for logged-in citizens -->
+{% if user.is_authenticated and user.user_type == 'citizen' %}
+{% include 'motorcycle_violation/chatbot_widget.html' %}
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find all success and info alerts inside the container
+        const alerts = document.querySelectorAll('.alert-success, .alert-info');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.display = 'none';  // Hide the alert after 3 seconds
+            }, 3000);
+        });
+    });
+</script>
+
+</body>
+
+</html>

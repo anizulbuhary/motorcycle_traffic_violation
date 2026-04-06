@@ -1,0 +1,95 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Suspension History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center">Suspension History</h2>
+  {% if suspensions %}
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Start</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">End</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Reason</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Duration (days)</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Fine (PKR)</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Completion</th>
+            <th style="background-color: #f8f9fa; color: #343a40; font-weight: bold;">Payment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {# First loop: Active suspensions #}
+          {% for suspension in suspensions %}
+            {% if suspension.is_active %}
+              <tr class="table-info">
+                <td>{{ suspension.suspended_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ suspension.suspended_until|date:"Y-m-d H:i" }}</td>
+                <td>{{ suspension.reason }}</td>
+                <td>{{ suspension.duration }}</td>
+                <td>{{ suspension.fine }}</td>
+                <td>
+                  {% if suspension.is_complete %}
+                    <span class="badge bg-success">Completed</span>
+                  {% else %}
+                    <span class="badge bg-danger">Not Completed</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if suspension.is_paid %}
+                    <span class="badge bg-success">Paid</span>
+                  {% else %}
+                    <span class="badge bg-danger">Not Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+
+          {# Second loop: Non-active suspensions #}
+          {% for suspension in suspensions %}
+            {% if not suspension.is_active %}
+              <tr>
+                <td>{{ suspension.suspended_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ suspension.suspended_until|date:"Y-m-d H:i" }}</td>
+                <td>{{ suspension.reason }}</td>
+                <td>{{ suspension.duration }}</td>
+                <td>{{ suspension.fine }}</td>
+                <td>
+                  {% if suspension.is_complete %}
+                    <span class="badge bg-success">Completed</span>
+                  {% else %}
+                    <span class="badge bg-danger">Not Completed</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if suspension.is_paid %}
+                    <span class="badge bg-success">Paid</span>
+                  {% else %}
+                    <span class="badge bg-danger">Not Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          
+          {% if suspensions|length == 0 %}
+            <tr>
+              <td colspan="7" class="text-center">No suspension records found.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">
+      <strong>No suspension records found.</strong>
+    </div>
+  {% endif %}
+<!-- Centered Button with bottom spacing -->
+<div class="d-flex justify-content-center mt-3 mb-4">
+    <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends 'motorcycle_violation/officer_base.html' %}
+
+{% block title %}Review Appeals{% endblock %}
+
+{% block content %}
+<!-- Inline CSS to ensure both action buttons have the same size -->
+<style>
+  .action-btn {
+    min-width: 120px;  /* Adjust this value as needed */
+  }
+  .is-invalid {
+    border-color: #dc3545;
+  }
+</style>
+
+<div class="container mt-5">
+  <h2 class="text-center">Review Appeals</h2>
+  {% if messages %}
+    <div id="message-alert">
+      {% for message in messages %}
+        <div class="alert alert-success" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if appeals %}
+    <div class="table-responsive">
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th>Appealing Citizen</th>
+            <th>Appealing Date</th>
+            <th>Reporting Citizen</th>
+            <th>Reporting Date</th>
+            <th>License Plate</th>
+            <th>Violation Type</th>
+            <th>Note</th>
+            <th>Cropped Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appeal in appeals %}
+            <tr>
+              <td>{{ appeal.citizen.user.username }}</td>
+              <td>{{ appeal.created_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ appeal.violation.reporter.user.username }}</td>
+              <td>{{ appeal.violation.timestamp|date:"Y-m-d H:i" }}</td>
+              <td>{{ appeal.violation.license_plate }}</td>
+              <td>{{ appeal.violation.violation_type }}</td>
+              <td>{{ appeal.reason }}</td>
+              <td>
+                {% if appeal.violation.cropped_image %}
+                  <a href="#" class="view-image" data-image-url="{{ appeal.violation.cropped_image.url }}">
+                    <img src="{{ appeal.violation.cropped_image.url }}" alt="Cropped Image" style="width: 100px; height: auto;">
+                  </a>
+                {% else %}
+                  No image available
+                {% endif %}
+              </td>
+              <td>
+                <!-- Accept button includes data attributes for reporter's suspension info -->
+                <button type="button"
+                        class="btn btn-success accept-btn action-btn"
+                        data-appeal-id="{{ appeal.id }}"
+                        data-reporter-suspension-count="{{ appeal.violation.reporter.suspension_history.count }}"
+                        data-reporter-total-suspension="{{ appeal.violation.reporter.total_suspension_duration_left }}"
+                        data-reporter-suspension-history="{% autoescape off %}<table class='table table-bordered'><thead><tr><th>Start</th><th>End</th><th>Reason</th><th>Duration</th></tr></thead><tbody>{% for suspension in appeal.violation.reporter.suspension_history.all %}<tr><td>{{ suspension.suspended_at|date:'Y-m-d H:i' }}</td><td>{{ suspension.suspended_until|date:'Y-m-d H:i' }}</td><td>{{ suspension.reason }}</td><td>{{ suspension.duration }} days</td></tr>{% endfor %}</tbody></table>{% endautoescape %}">
+                  Accept
+                </button>
+                <form method="POST" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="appeal_id" value="{{ appeal.id }}">
+                  <input type="hidden" name="action" value="reject">
+                  <button type="submit" class="btn btn-danger action-btn">Reject</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No appeals to review.</div>
+  {% endif %}
+</div>
+
+<!-- Modal for Accepting Appeal with Suspension Option and Reporter Suspension History -->
+<div class="modal fade" id="acceptModal" tabindex="-1" aria-labelledby="acceptModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="acceptForm" method="POST">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="acceptModalLabel">Accept Appeal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Hidden fields to pass appeal id and action -->
+          <input type="hidden" name="appeal_id" id="modalAppealId">
+          <input type="hidden" name="action" value="accept">
+          <p>Please choose an action:</p>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="suspend_option" id="acceptOnlyOption" value="no" checked>
+            <label class="form-check-label" for="acceptOnlyOption">Accept Only</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="suspend_option" id="acceptAndSuspendOption" value="yes">
+            <label class="form-check-label" for="acceptAndSuspendOption">Accept and Suspend Reporter</label>
+          </div>
+          <div id="suspensionDaysInput" class="mt-3" style="display: none;">
+            <div class="mb-3">
+              <label for="suspension_days" class="form-label">Suspension Duration (Days):</label>
+              <input type="number" class="form-control" id="suspension_days" name="suspension_days" min="1" placeholder="Enter number of days">
+              <div class="invalid-feedback">
+                * Required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="suspension_reason" class="form-label">Suspension Reason:</label>
+              <textarea class="form-control" id="suspension_reason" name="suspension_reason" placeholder="Enter reason for suspension"></textarea>
+              <div class="invalid-feedback">
+                * Required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="suspension_fine" class="form-label">Suspension Fine (PKR):</label>
+              <select class="form-control" id="suspension_fine" name="suspension_fine">
+                <option value="">-- Select Fine --</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="2500">2500</option>
+                <option value="5000">5000</option>
+              </select>
+              <div class="invalid-feedback">
+                * Required. Please choose a fine amount.
+              </div>
+            </div>
+          </div>
+          <!-- Container to show the reporter's suspension summary and history -->
+          <div id="reporterSuspensionHistory" style="display: none; margin-top: 10px;">
+            <h6>Reporter Suspension Summary</h6>
+            <p>Total Suspension Count: <span id="suspensionCount"></span></p>
+            <p>Total Suspension Duration Left: <span id="totalSuspensionDuration"></span> days</p>
+            <h6>Past Suspension History</h6>
+            <div id="suspensionHistoryContent"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Viewing Cropped Image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Cropped Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" id="modalImage" class="img-fluid" alt="Cropped Image">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Setup for the Accept button modal
+  const acceptButtons = document.querySelectorAll('.accept-btn');
+  const acceptModal = new bootstrap.Modal(document.getElementById('acceptModal'));
+  const modalAppealId = document.getElementById('modalAppealId');
+
+  // Containers for reporter's suspension info
+  const reporterSuspensionHistoryDiv = document.getElementById('reporterSuspensionHistory');
+  const suspensionHistoryContentDiv = document.getElementById('suspensionHistoryContent');
+  const suspensionCountSpan = document.getElementById('suspensionCount');
+  const totalSuspensionDurationSpan = document.getElementById('totalSuspensionDuration');
+
+  // Form submit event with inline validation
+  const acceptForm = document.getElementById('acceptForm');
+  acceptForm.addEventListener('submit', function(event) {
+    const suspendOption = document.querySelector('input[name="suspend_option"]:checked').value;
+    if (suspendOption === "yes") {
+      let valid = true;
+      const suspensionDaysInputEl = document.getElementById('suspension_days');
+      const suspensionReasonEl = document.getElementById('suspension_reason');
+      const suspensionFineEl = document.getElementById('suspension_fine');
+      
+      if (!suspensionDaysInputEl.value) {
+        suspensionDaysInputEl.classList.add("is-invalid");
+        valid = false;
+      } else {
+        suspensionDaysInputEl.classList.remove("is-invalid");
+      }
+      
+      if (!suspensionReasonEl.value.trim()) {
+        suspensionReasonEl.classList.add("is-invalid");
+        valid = false;
+      } else {
+        suspensionReasonEl.classList.remove("is-invalid");
+      }
+      
+      if (!suspensionFineEl.value) {
+        suspensionFineEl.classList.add("is-invalid");
+        valid = false;
+      } else {
+        suspensionFineEl.classList.remove("is-invalid");
+      }
+      
+      if (!valid) {
+        event.preventDefault();
+      }
+    }
+  });
+
+  acceptButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const appealId = this.getAttribute('data-appeal-id');
+      modalAppealId.value = appealId;
+      // Retrieve reporter suspension data from data attributes
+      const reporterSuspensionCount = this.getAttribute('data-reporter-suspension-count');
+      const reporterTotalSuspension = this.getAttribute('data-reporter-total-suspension');
+      const reporterSuspensionHistory = this.getAttribute('data-reporter-suspension-history');
+      // Populate the modal's suspension summary and history section
+      suspensionCountSpan.innerHTML = reporterSuspensionCount;
+      totalSuspensionDurationSpan.innerHTML = reporterTotalSuspension;
+      if (reporterSuspensionHistory.trim() === "") {
+        suspensionHistoryContentDiv.innerHTML = "No suspension history";
+      } else {
+        suspensionHistoryContentDiv.innerHTML = reporterSuspensionHistory;
+      }
+      // Reset modal options: default to "Accept Only" and hide suspension inputs and history.
+      document.getElementById('acceptOnlyOption').checked = true;
+      document.getElementById('suspensionDaysInput').style.display = 'none';
+      reporterSuspensionHistoryDiv.style.display = 'none';
+      document.getElementById('suspension_days').value = '';
+      document.getElementById('suspension_reason').value = '';
+      document.getElementById('suspension_fine').value = '';
+      // Remove any invalid classes.
+      document.getElementById('suspension_days').classList.remove("is-invalid");
+      document.getElementById('suspension_reason').classList.remove("is-invalid");
+      document.getElementById('suspension_fine').classList.remove("is-invalid");
+      acceptModal.show();
+    });
+  });
+
+  // Toggle display of suspension days input, suspension reason, and reporter suspension history when the radio option changes.
+  const acceptOnlyOption = document.getElementById('acceptOnlyOption');
+  const acceptAndSuspendOption = document.getElementById('acceptAndSuspendOption');
+  const suspensionDaysInput = document.getElementById('suspensionDaysInput');
+
+  acceptOnlyOption.addEventListener('change', function() {
+    if (this.checked) {
+      suspensionDaysInput.style.display = 'none';
+      reporterSuspensionHistoryDiv.style.display = 'none';
+    }
+  });
+
+  acceptAndSuspendOption.addEventListener('change', function() {
+    if (this.checked) {
+      suspensionDaysInput.style.display = 'block';
+      reporterSuspensionHistoryDiv.style.display = 'block';
+    }
+  });
+
+  // Setup for the image preview modal.
+  const viewImageLinks = document.querySelectorAll('.view-image');
+  viewImageLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault();
+      const imageUrl = this.getAttribute('data-image-url');
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = imageUrl;
+      const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+      imageModal.show();
+    });
+  });
+});
+</script>
+{% endblock %}

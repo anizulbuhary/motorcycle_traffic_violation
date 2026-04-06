@@ -1,0 +1,213 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+        .navbar {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+        .form-container {
+            margin-top: 150px;
+        }
+        .is-invalid {
+            border-color: red;
+        }
+        .invalid-feedback {
+            display: none;
+        }
+        .is-invalid ~ .invalid-feedback {
+            display: block;
+        }  
+        .hidden {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+        <div class="container-fluid">
+                   <a class="navbar-brand d-flex align-items-center" href="{% url 'landing_page' %}">
+        <img src="{% static 'motorcycle_violation/images/logo.jpg' %}" 
+            alt="Logo" 
+            class="me-2" 
+            style="height: 60px; width: 60px; object-fit: cover; border-radius: 50%;">
+        <span class="fw-bold">Safe Ride</span>
+        </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'landing_page' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container form-container">
+    <h2 class="text-center mb-4">Register</h2>
+    <form method="POST" class="border p-4 rounded bg-light shadow" style="max-width: 400px; margin: auto;" onsubmit="return validateForm()">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" name="first_name" id="first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" value="{{ form.first_name.value|default:'' }}" required>
+            {% for error in form.first_name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" name="last_name" id="last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" value="{{ form.last_name.value|default:'' }}" required>
+            {% for error in form.last_name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <div class="mb-3">
+            <label for="user_type" class="form-label">User Type</label>
+            <select name="user_type" id="user_type" class="form-select" onchange="toggleFields(this.value)" required>
+                <option value="" disabled {% if not form.user_type.value %}selected{% endif %}>Select user type</option>
+                <option value="citizen" {% if form.user_type.value == 'citizen' %}selected{% endif %}>Citizen</option>
+                <option value="officer" {% if form.user_type.value == 'officer' %}selected{% endif %}>Government Officer</option>
+            </select>
+        </div>
+    
+        <div id="cnic-field" class="mb-3 {% if form.user_type.value != 'citizen' %}hidden{% else %}visible{% endif %}">
+            <label for="cnic" class="form-label">CNIC</label>
+            <input type="text" name="cnic" id="cnic" class="form-control {% if form.cnic.errors %}is-invalid{% endif %}" value="{{ form.cnic.value|default:'' }}" pattern="\d{13}" title="CNIC should be a 13-digit number.">
+            {% for error in form.cnic.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div id="employee-id-field" class="mb-3 {% if form.user_type.value != 'officer' %}hidden{% else %}visible{% endif %}">
+            <label for="employee_id" class="form-label">Employee ID</label>
+            <input type="text" name="employee_id" id="employee_id" class="form-control {% if form.employee_id.errors %}is-invalid{% endif %}" value="{{ form.employee_id.value|default:'' }}" pattern="\d{10}" title="Employee ID should be a 10-digit number.">
+            {% for error in form.employee_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+    
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" id="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" value="{{ form.username.value|default:'' }}" required>
+            {% for error in form.username.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" value="{{ form.email.value|default:'' }}" required>
+            {% for error in form.email.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" minlength="8" required>
+            {% for error in form.password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+</div>
+
+<!-- Footer Section -->
+<footer class="bg-white text-black py-3 mt-5">
+    <div class="container text-center">
+        <p class="mb-1">&copy; 2025 SafeRide. All Rights Reserved.</p>
+        <p class="mb-0">Ensuring safety, one ride at a time.</p>
+    </div>
+</footer>
+
+
+<script>
+    function toggleFields(userType) {
+        document.getElementById('cnic-field').style.display = (userType === 'citizen') ? 'block' : 'none';
+        document.getElementById('employee-id-field').style.display = (userType === 'officer') ? 'block' : 'none';
+    }
+
+    function validateForm() {
+        const userType = document.getElementById('user_type').value;
+        let isValid = true;
+
+        if (userType === 'citizen') {
+            const cnic = document.getElementById('cnic').value;
+            if (!/^\d{13}$/.test(cnic)) {
+                document.getElementById('cnic').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('cnic').classList.remove('is-invalid');
+            }
+        } else if (userType === 'officer') {
+            const employeeId = document.getElementById('employee_id').value;
+            if (!/^\d{10}$/.test(employeeId)) {
+                document.getElementById('employee_id').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('employee_id').classList.remove('is-invalid');
+            }
+        }
+
+        return isValid;
+    }
+
+    function hideInvalidFeedback(event) {
+        const inputField = event.target;
+        const invalidFeedback = inputField.nextElementSibling; // Assumes invalid-feedback is the next sibling
+        if (invalidFeedback && invalidFeedback.classList.contains('invalid-feedback')) {
+            inputField.classList.remove('is-invalid');
+            invalidFeedback.style.display = 'none';
+        }
+    }
+
+    // Attach focus event listeners to input fields
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', hideInvalidFeedback);
+        });
+    });
+</script>
+
+</body>
+</html>

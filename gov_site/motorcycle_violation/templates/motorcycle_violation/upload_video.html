@@ -1,0 +1,231 @@
+{% extends 'motorcycle_violation/base.html' %}
+
+{% block title %}Upload Video{% endblock %}
+
+{% block content %}
+<div class="container mt-5" id="main-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center mb-4">Upload Video for Processing</h1>
+
+            <!-- Display Error Messages -->
+            {% if error %}
+            <div id="error-message" class="alert alert-danger text-center">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <!-- Display Warning or Success Message -->
+            {% if message %}
+            <div id="message-box" class="alert alert-warning text-center">
+                {{ message }}
+            </div>
+            {% elif success %}
+            <div id="success-message" class="alert alert-success text-center">
+                {{ success }}
+            </div>
+            {% endif %}
+
+            <!-- Upload Form -->
+            <form method="post" enctype="multipart/form-data" class="mb-5 text-center" id="upload-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="video_file" class="font-weight-bold">Select Video:</label>
+                    <input type="file" name="video_file" id="video_file" class="form-control" accept="video/*" required>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn shadow-sm">Upload and Process</button>
+                </div>
+            </form>
+
+            <!-- Progress Bar (hidden until form submission) -->
+            <div id="progress-container" class="mb-5 text-center" style="display: none;">
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 100%;" 
+                         aria-valuenow="100" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                </div>
+                <p class="mt-2">Processing... Please wait.</p>
+            </div>
+
+            <!-- Output Video Section -->
+            {% if output_video %}
+            <div id="output-video-section" class="mb-5 text-center">
+                <h2 class="mb-4">Processed Video</h2>
+                <div class="rounded shadow-lg overflow-hidden" style="max-width: 100%; display: flex; justify-content: center;">
+                    <video controls preload="auto" class="rounded" style="max-width: 80%;">
+                        <source src="{{ output_video }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            {% endif %}
+
+<!-- Violation Images Section -->
+{% if violation_data %}
+<div id="images-section" class="mb-5 text-center">
+    <h2 class="mb-4">Violation Images</h2>
+    <div class="d-flex justify-content-center">
+        <ul class="list-group mb-4" style="width: 100%;">
+            {% for item in violation_data %}
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-column">
+                <!-- Inner wrapper with thicker border that adjusts for mobile view -->
+                <div class="shadow-sm rounded mx-auto" style="border: 3px solid #ddd; padding: 5px; width: 100%; max-width: 300px;">
+                    <!-- Display violation metadata above the image -->
+                    <div class="text-center mb-2">
+                        <strong>{{ item.violation_class }}</strong>
+                        (Confidence: {{ item.violation_conf }})
+                    </div>
+                    <!-- Violation image -->
+                    <div class="text-center mb-2">
+                        <img src="{{ item.image_url }}" alt="Violation Image" class="img-fluid rounded" style="width: 100%; max-width: 300px; height: auto;">
+                    </div>
+                    <!-- License Plate Crop Image (300px width) -->
+                    <div class="text-center mb-2">
+                        <img src="{{ item.lp_crop_url }}" alt="License Plate Crop" class="img-fluid rounded" style="width: 100%; max-width: 300px; height: auto;">
+                    </div>
+                    <!-- Report Message Container (will display response message from report_license_plate) -->
+                    <div class="alert alert-info mt-2" id="report-message-{{ forloop.counter }}" style="display: none;"></div>
+                    <!-- Form below the image for license plate editing -->
+                    <form method="post" action="{% url 'report_license_plate' %}" class="report-form" id="report-form-{{ forloop.counter }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="image_url" value="{{ item.image_url }}">
+                        <input type="hidden" name="detected_violation" value="{{ item.violation_class }}">
+                        <div class="form-group">
+                            <label for="lp_{{ forloop.counter }}">License Plate:</label>
+                            <input type="text" class="form-control" id="lp_{{ forloop.counter }}" name="license_plate" value="{{ item.best_lp_text }}">
+                        </div>
+                        <p class="text-warning text-center mt-2">Edit if AI is wrong.</p>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-sm" id="report-btn-{{ forloop.counter }}">Report</button>
+                        </div>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+
+
+            <!-- Done Button Section -->
+            {% if output_video or violation_data %}
+            <div id="done-section" class="text-center mb-5">
+                <!-- Clicking this link will call the clear_media_redirect view to clear media folders and redirect back -->
+                <a href="{% url 'clear_media_redirect' %}" class="btn btn-success">Done</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Auto Remove Messages After 10 Seconds, Handle Report Form Submission via AJAX, and Clear Result Sections on Done -->
+<script>
+    // When the upload form is submitted, hide the form and display the progress bar.
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadForm = document.getElementById("upload-form");
+        if (uploadForm) {
+            uploadForm.addEventListener("submit", function() {
+                // Hide the form.
+                uploadForm.style.display = "none";
+                // Show the progress bar.
+                document.getElementById("progress-container").style.display = "block";
+            });
+        }
+    });
+    
+    // Auto remove top-level messages after 10 seconds.
+    setTimeout(function () {
+        let errorBox = document.getElementById('error-message');
+        let messageBox = document.getElementById('message-box');
+        let successBox = document.getElementById('success-message');
+        if (errorBox) errorBox.style.display = 'none';
+        if (messageBox) messageBox.style.display = 'none';
+        if (successBox) successBox.style.display = 'none';
+    }, 10000);
+
+    // When the Done button is pressed, clear the result sections.
+    document.addEventListener('DOMContentLoaded', function() {
+        const doneButton = document.getElementById("done-button");
+        if (doneButton) {
+            doneButton.addEventListener("click", function() {
+                const videoSection = document.getElementById("output-video-section");
+                if (videoSection) {
+                    videoSection.style.display = 'none';
+                }
+                const imagesSection = document.getElementById("images-section");
+                if (imagesSection) {
+                    imagesSection.style.display = 'none';
+                }
+                const errorBox = document.getElementById('error-message');
+                const messageBox = document.getElementById('message-box');
+                const successBox = document.getElementById('success-message');
+                if (errorBox) errorBox.style.display = 'none';
+                if (messageBox) messageBox.style.display = 'none';
+                if (successBox) successBox.style.display = 'none';
+                document.getElementById("done-section").style.display = 'none';
+            });
+        }
+    });
+    
+    // Handle report form submission via AJAX to display response message above the report form.
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportForms = document.querySelectorAll('.report-form');
+        reportForms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();  // Prevent normal form submission.
+                const formData = new FormData(form);
+                const actionUrl = form.getAttribute('action');
+                // Find the message container in the same parent element as the form.
+                const messageContainer = form.parentElement.querySelector('.alert');
+                fetch(actionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Set alert class based on response.
+                    if (data.success) {
+                        messageContainer.className = "alert alert-success mt-2";
+                    } else {
+                        messageContainer.className = "alert alert-danger mt-2";
+                    }
+                    // Display the response message above the form.
+                    messageContainer.style.display = 'block';
+                    messageContainer.textContent = data.message;
+                    // If success, update the report button.
+                    if (data.success) {
+                        const reportBtn = form.querySelector('button[type="submit"]');
+                        if (reportBtn) {
+                            reportBtn.textContent = "Reported";
+                            reportBtn.className = "btn btn-secondary disabled";
+                        }
+                    }
+                    // Hide the message after 5 seconds.
+                    setTimeout(function() {
+                        messageContainer.style.display = 'none';
+                    }, 5000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    messageContainer.className = "alert alert-danger mt-2";
+                    messageContainer.style.display = 'block';
+                    messageContainer.textContent = 'An error occurred while reporting.';
+                    setTimeout(function() {
+                        messageContainer.style.display = 'none';
+                    }, 3000);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            margin-top: 0; /* Reduced top margin */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        caption {
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 10pt;
+        }
+        .note {
+            text-align: center;
+            font-weight: bold;
+            color: red;
+            margin-top: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1px; /* Reduced bottom margin for header */
+        }
+        .header h1 {
+            font-size: 20pt;
+            margin: 0;
+        }
+        .header .logo img {
+            max-width: 80px;
+            height: auto;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+        hr {
+            border: 0;
+            height: 2px;
+            background: #000;
+            margin: 20px 0;
+        }
+        /* Stamp styling */
+        .paid-stamp {
+            position: fixed;
+            bottom: 400px;
+            right: 20px;
+            max-width: 200px;
+            opacity: 1.0;
+            z-index: 100;
+        }
+        .redeem-stamp {
+            position: fixed;
+            bottom: 412px;
+            right: 20px;
+            max-width: 180px;
+            opacity: 1.0;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Official Traffic Fine Receipt</h1>
+        <div class="logo">
+            <img src="{% static 'motorcycle_violation/images/logo_white_big.png' %}" alt="Logo" class="logo">
+        </div>
+    </div>
+
+    <p>Please find the details of your fines and payment status below:</p>
+    <hr>
+    
+    <table>
+        <caption>Receipt Details</caption>
+        <tr><th>Username</th><td>{{ user_name }}</td></tr>
+        <tr><th>CNIC</th><td>{{ user_cnic }}</td></tr>
+        <tr><th>Email</th><td>{{ user_email }}</td></tr>
+        <tr><th>Receipt ID</th><td>{{ receipt_id }}</td></tr>
+        <tr><th>Created At</th><td>{{ created_at|date:"D, d M Y H:i:s" }}</td></tr>
+        <tr><th>Current Fines</th><td>PKR {{ current_fines|floatformat:2 }}</td></tr>
+        <tr><th>Current Credits</th><td>PKR {{ current_credits|floatformat:2 }}</td></tr>
+        <tr><th>Suspension Fines</th><td>PKR {{ suspension_fines|floatformat:2 }}</td></tr>
+        {% if status == 'Redeemable' %}
+            <tr><th>Redeemable Amount</th><td>PKR {{ current_credits|floatformat:2 }}</td></tr>
+            <tr><th>Status</th><td>{{ status }}</td></tr>
+        {% else %}
+            <tr><th>Payable Amount</th><td>PKR {{ payable_amount|floatformat:2 }}</td></tr>
+            <tr><th>Status</th><td>{{ status }}</td></tr>
+        {% endif %}
+        <tr><th>Receipt Status</th><td>{{ receipt_status }}</td></tr>
+        <tr>
+            <th>Status Updated At</th>
+            <td>
+              {% if receipt.status == 'GENERATED' %}
+                N/A
+              {% else %}
+              {{ status_updated_at|date:"D, d M Y H:i:s" }}
+              {% endif %}
+            </td>
+          </tr>                  
+    </table>
+
+    {% if current_fines %}
+    <table style="margin-bottom: 20px;">
+        <caption>Motorcycle Fine Details</caption>
+        <tr>
+            <th>License Plate</th>
+            <th>Model</th>
+            <th>Fine Amount</th>
+        </tr>
+        {% for motorcycle in motorcycles %}
+        <tr>
+            <td>{{ motorcycle.license_plate }}</td>
+            <td>{{ motorcycle.model }}</td>
+            <td>PKR {{ motorcycle.fine_balance|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}    
+
+    <hr>
+
+    <p class="note">
+        Note:
+        {% if status == 'Redeemable' %}
+            Please redeem your credits within 30 days.
+        {% else %}
+            Please pay the fines at your nearest bank within 30 days to avoid additional penalties.
+        {% endif %}
+    </p>
+
+    <!-- QR Code for Verification -->
+    <div style="text-align: center; margin-top: 20px;">
+        <p><strong>Scan the QR Code below to verify this receipt:</strong></p>
+        <img src="{{ qr_image_data }}" alt="QR Code" width="50" height="50" style="width: 100px; height: 100px;">
+    </div>
+
+    <footer>
+        <p>If you have any questions, contact us at <a href="mailto:info@saferide.com">info@saferide.com</a></p>
+    </footer>
+
+    {# Conditionally display stamp image based on receipt status #}
+    {% if receipt_status|lower == "paid" %}
+        <img src="{% static 'motorcycle_violation/images/paid-stamp.png' %}" alt="Paid Stamp" class="paid-stamp">
+    {% elif receipt_status|lower == "redeemed" %}
+        <img src="{% static 'motorcycle_violation/images/redeem-stamp.png' %}" alt="Redeemed Stamp" class="redeem-stamp">
+    {% endif %}
+
+</body>
+</html>

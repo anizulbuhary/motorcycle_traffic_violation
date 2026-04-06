@@ -1,0 +1,205 @@
+{% extends 'motorcycle_violation/officer_base.html' %}
+
+{% block title %}Receipt List{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center">Receipt List</h1>
+  
+  <!-- Display Django messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <!-- User Search Form -->
+  <form method="get" action="">
+    <div class="mb-3">
+      <label for="user_search" class="form-label">Search User (Enter complete username):</label>
+      <input type="text" id="user_search" name="user_query" class="form-control"
+             placeholder="Enter exact username" value="{{ user_query }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Search User</button>
+  </form>
+  
+  <br>
+  
+  {% if user_obj %}
+    <!-- Display User Basic Details -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4>User Details</h4>
+        <p><strong>Username:</strong> {{ user_obj.user.username }}</p>
+        <p><strong>Email:</strong> {{ user_obj.user.email }}</p>
+        <p><strong>First Name:</strong> {{ user_obj.user.first_name }}</p>
+        <p><strong>Last Name:</strong> {{ user_obj.user.last_name }}</p>
+        <p><strong>CNIC:</strong> {{ user_obj.cnic }}</p>
+      </div>
+    </div>
+    
+    <!-- Receipt Search Form with Auto-suggest -->
+    <form method="get" action="">
+      <!-- Preserve the user query -->
+      <input type="hidden" name="user_query" value="{{ user_query }}">
+      <div class="mb-3">
+        <label for="receipt_search" class="form-label">Search Receipt (by ID):</label>
+        <input list="receipt_ids" type="text" id="receipt_search" name="receipt_q" class="form-control"
+               placeholder="Start typing receipt ID" value="{{ receipt_query }}">
+        <datalist id="receipt_ids">
+          {% if receipts %}
+            {% for r in receipts %}
+              <option value="{{ r.receipt_id }}">
+            {% endfor %}
+          {% endif %}
+        </datalist>
+      </div>
+      <button type="submit" class="btn btn-primary">Search Receipt</button>
+    </form>
+    
+    <br>
+    
+    <!-- Receipts Table -->
+    {% if receipts %}
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Receipt ID</th>
+              <th>Current Fines</th>
+              <th>Current Credits</th>
+              <th>Suspension Fines</th>
+              <th>Payable Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for receipt in receipts %}
+              <tr id="receipt-{{ receipt.id }}">
+                <td>{{ receipt.receipt_id }}</td>
+                <td>{{ receipt.current_fines|floatformat:2 }}</td>
+                <td>{{ receipt.current_credits|floatformat:2 }}</td>
+                <td>{{ receipt.suspension_fines|floatformat:2 }}</td>
+                <td>{{ receipt.payable_amount|floatformat:2 }}</td>
+                <td>{{ receipt.status }}</td>
+                <td>
+                  {% if receipt.status == 'GENERATED' %}
+                    <!-- The form is handled via JavaScript -->
+                    <form method="post" action="{% url 'update_receipt_status' receipt.id %}" class="update-status-form">
+                      {% csrf_token %}
+                      {% if receipt.payable_amount < 0 %}
+                        <button type="submit" class="btn btn-warning btn-sm action-btn">Confirm Redemption</button>
+                      {% else %}
+                        <button type="submit" class="btn btn-success btn-sm action-btn">Confirm Payment</button>
+                      {% endif %}
+                    </form>
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="7" class="text-center">No receipts found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-info mt-4">
+        <strong>No receipts found for this user.</strong>
+      </div>
+    {% endif %}
+
+    <!-- Done Button: Appears only after a successful user search.
+         When pressed, it reloads the page without GET parameters. -->
+    <div class="mt-4 text-center">
+      <a href="{% url 'receipt_list' %}" class="btn btn-primary">Done</a>
+    </div>
+  {% endif %}
+</div>
+
+<!-- CSS for equal-width action buttons and mobile responsiveness -->
+<style>
+  .action-btn {
+    min-width: 150px; /* Desktop min-width */
+  }
+  @media (max-width: 576px) {
+    .action-btn {
+      min-width: 100%; /* On mobile, buttons take full width */
+    }
+  }
+</style>
+
+<!-- JavaScript to intercept the update status forms -->
+<script>
+// Helper function to retrieve CSRF token from cookie.
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.update-status-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();  // Prevent the normal form submission.
+      const url = form.getAttribute('action');
+      const csrftoken = getCookie('csrftoken');
+      const submitButton = form.querySelector('button[type="submit"]');
+      
+      // Disable the button to avoid duplicate submissions.
+      submitButton.disabled = true;
+      
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({})  // No extra data needed.
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update the button text and class.
+          submitButton.textContent = data.button_text;
+          submitButton.className = data.button_class + " action-btn";
+          
+          // Also update the Status cell (6th column) in the same row.
+          const row = form.closest('tr');
+          if (row) {
+            row.querySelector('td:nth-child(6)').textContent = data.new_status;
+          }
+        } else {
+          // In case of error, show an alert and re-enable the button.
+          alert(data.message || 'An error occurred.');
+          submitButton.disabled = false;
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+        submitButton.disabled = false;
+      });
+    });
+  });
+});
+</script>
+{% endblock %}
